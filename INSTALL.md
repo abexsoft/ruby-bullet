@@ -10,13 +10,13 @@ How to compile all libraries.
 1. compile external libraries.
    
     > $ rake download  
-    > $ rake compile  
+    > $ rake compile:deps
 
 2. make ruby extension libraries.
 
-    > $ rake build
+    > $ rake compile:ext
 
-3. install ruby extension libraries and so on.
+3. install ruby extension libraries.
 
     > $ rake package  
     > $ sudo gem install pkg/ruby-bullet-\<version>-\<arch>.gem  

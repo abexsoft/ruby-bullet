@@ -20,59 +20,68 @@ end
 #
 # Compile libraries.
 #
-desc 'Compile all of libraries.'
-task :compile => [:compile_bullet]
+namespace :compile do
 
-task :compile_bullet do
-  chdir("deps/src/bullet-2.80-rev2531/") {
-    if /mingw/ =~ RUBY_PLATFORM
-      sh 'cmake . -G "MSYS Makefiles" -DUSE_GLUT:BOOL=OFF -DBUILD_DEMOS:BOOL=OFF -DCMAKE_INSTALL_PREFIX:PATH=..\
+  namespace :deps do
+
+    task :bullet do
+      chdir("deps/src/bullet-2.80-rev2531/") {
+        if /mingw/ =~ RUBY_PLATFORM
+          sh 'cmake . -G "MSYS Makefiles" -DUSE_GLUT:BOOL=OFF -DBUILD_DEMOS:BOOL=OFF -DCMAKE_INSTALL_PREFIX:PATH=..\
 \.. -DINCLUDE_INSTALL_DIR:PATH=include\\bullet -DLIB_DESTINATION:STRING=..\\..\\lib -DPKGCONFIG_INSTALL_PR
 EFIX:STRING=..\\..\\lib\\pkgconfig\\'
-      sh "make -j4"
-      system('mkdir ..\..\lib')
-      system('mkdir ..\..\include\bullet')
-      sh "cp -a lib/*.a ../../lib"
-      sh "cp -a src/* ../../include/bullet"
-    else
-      sh "cmake -DCMAKE_INSTALL_PREFIX:PATH=../.. -DINCLUDE_INSTALL_DIR:PATH=include/bullet -DLIB_DESTINATION:STRING=../../lib -DPKGCONFIG_INSTALL_PREFIX:STRING=../../lib/pkgconfig/"
-      sh "make -j4 && make install"
+          sh "make -j4"
+          system('mkdir ..\..\lib')
+          system('mkdir ..\..\include\bullet')
+          sh "cp -a lib/*.a ../../lib"
+          sh "cp -a src/* ../../include/bullet"
+        else
+          sh "cmake -DCMAKE_INSTALL_PREFIX:PATH=../.. -DINCLUDE_INSTALL_DIR:PATH=include/bullet -DLIB_DESTINATION:STRING=../../lib -DPKGCONFIG_INSTALL_PREFIX:STRING=../../lib/pkgconfig/"
+          sh "make -j4 && make install"
+        end
+      }
+    end
+  end
+  desc 'Compile a bullet library.'
+  task :deps => 'deps:bullet'    
+
+
+  namespace :ext do
+    #
+    # Extension
+    #
+
+    DLEXT = RbConfig::MAKEFILE_CONFIG['DLEXT']
+
+    task :bullet => ["lib/Bullet.#{DLEXT}"] 
+
+    ## lib/*.#{DLEXT}
+    file "lib/Bullet.#{DLEXT}" => "bindings/bullet/Bullet.#{DLEXT}" do |f|
+      cp f.prerequisites, "lib/", :preserve => true
     end
 
-  }
+    ## ext/**/*.#{DLEXT}
+    file "bindings/bullet/Bullet.#{DLEXT}" => FileList["bindings/bullet/Makefile"] do |f|
+      sh 'cd bindings/bullet/ && make clean && make'
+    end
+    CLEAN.include 'bindings/bullet/*.{o,so,dll}'
+
+    ## ext/**/Makefile
+    file 'bindings/bullet/Makefile' => FileList['bindings/bullet/interface/bullet_wrap.cpp'] do
+      chdir('bindings/bullet/') { ruby 'extconf.rb' }
+    end
+    CLEAN.include 'bindings/bullet/Makefile'
+
+    ## make wrappers with swig.
+    file 'bindings/bullet/interface/bullet_wrap.cpp' do
+      chdir('bindings/bullet/interface') { sh 'make' }
+    end
+    CLEAN.include 'bindings/bullet/interface/bullet_wrap.{cpp,h,o}'
+  end
+
+  desc 'Compile a bullet extension library.'
+  task :ext => 'ext:bullet'    
 end
-
-#
-# Extension
-#
-
-DLEXT = RbConfig::MAKEFILE_CONFIG['DLEXT']
-
-desc 'Build the enet extension'
-task :build => ["lib/Bullet.#{DLEXT}"] 
-
-## lib/*.#{DLEXT}
-file "lib/Bullet.#{DLEXT}" => "bindings/bullet/Bullet.#{DLEXT}" do |f|
-  cp f.prerequisites, "lib/", :preserve => true
-end
-
-## ext/**/*.#{DLEXT}
-file "bindings/bullet/Bullet.#{DLEXT}" => FileList["bindings/bullet/Makefile"] do |f|
-  sh 'cd bindings/bullet/ && make clean && make'
-end
-CLEAN.include 'bindings/bullet/*.{o,so,dll}'
-
-## ext/**/Makefile
-file 'bindings/bullet/Makefile' => FileList['bindings/bullet/interface/bullet_wrap.cpp'] do
-  chdir('bindings/bullet/') { ruby 'extconf.rb' }
-end
-CLEAN.include 'bindings/bullet/Makefile'
-
-## make wrappers with swig.
-file 'bindings/bullet/interface/bullet_wrap.cpp' do
-  chdir('bindings/bullet/interface') { sh 'make' }
-end
-CLEAN.include 'bindings/bullet/interface/bullet_wrap.{cpp,h,o}'
 
 #
 # Document
@@ -86,10 +95,14 @@ end
 #
 # Gemspec
 #
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'Version'
+
 spec = Gem::Specification.new do |s|
 
   s.name        = "ruby-bullet"
-  s.version     = "0.0.1"
+  s.version     = Ruby::Bullet::VERSION
   s.summary     = "A ruby extension library of Bullet."
   s.homepage    = "https://github.com/abexsoft/ruby-bullet"
   s.authors     = ["abexsoft works"]
@@ -102,14 +115,16 @@ spec = Gem::Specification.new do |s|
                      'README.md',
                      'INSTALL.md',
                      'LICENSE',
+                     'bindings/bullet/interface/**/*',
+                     'bindings/bullet/src/**/*',
                      'doc/**/*',
                      'lib/**/*',
+                     'sample/**/*',
                      'deps/lib/*',
                      'deps/include/**/*',
                     ].to_a
 
   s.require_paths = ["lib"]
-  s.rubyforge_project = s.name
 end
 
 Gem::PackageTask.new(spec) do |pkg|
