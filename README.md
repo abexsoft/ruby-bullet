@@ -18,6 +18,13 @@ This project has a pre-compiled gem.
      $ sudo gem install pkg/ruby-bullet-<version>-<arch>.gem
 
 
+Usages
+-----
+Run a sample application.
+
+     $ ruby <gems_path>/ruby-bullet-<version>-<arch>/sample/hello_bullet/HelloBullet.rb
+
+
 How to compile
 ----
 see [INSTALL.md](https://github.com/abexsoft/ruby-bullet/blob/master/INSTALL.md)
