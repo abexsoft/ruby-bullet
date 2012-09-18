@@ -1,7 +1,12 @@
-require 'tk'
+# -*- coding: utf-8 -*-
+require 'gtk2'
+require 'cairo'
 require "Bullet.so"
 
 class Physics
+  attr_accessor :context
+  attr_accessor :objects
+
   def initialize()
     @collisionConfig = Bullet::BtDefaultCollisionConfiguration.new();
     @collisionDispatcher = Bullet::BtCollisionDispatcher.new(@collisionConfig)
@@ -18,23 +23,17 @@ class Physics
     gravity = Bullet::BtVector3.new(0.0, 9.8, 0.0)
     @dynamicsWorld.setGravity(gravity)
 
+    @objects = []
+
     @lastTime = -1
   end
 
-  def createBox(motionState, mass, width, height)
-    colObj = Bullet::BtBoxShape.new(Bullet::BtVector3.new(width / 2, height / 2, width / 2))
-    inertia = Bullet::BtVector3.new()
-    colObj.calculateLocalInertia(mass, inertia)
-
-    rigidBody = Bullet::BtRigidBody.new(mass, motionState, colObj, inertia)
-    rigidBody.instance_variable_set(:@collisionShape, colObj) 
-    rigidBody.setAngularFactor(Bullet::BtVector3.new(0, 0, 1)) # rotate around z-axis only.
-
-    @dynamicsWorld.addRigidBody(rigidBody)
-    return rigidBody
+  def addObject(obj)
+    @objects.push(obj)
+    @dynamicsWorld.addRigidBody(obj.rigidBody)
   end
 
-  def update()
+  def update(context)
     @lastTime = Time.now.to_f if @lastTime < 0
 
     # calc delta
@@ -45,44 +44,40 @@ class Physics
     # step 
     @dynamicsWorld.stepSimulation(delta)
 
-    return true
+    @objects.each {|obj|
+      obj.draw(context)
+    }
+
+    return delta
   end
 end
 
 
 class Box < Bullet::BtMotionState
-  def initialize(c, physics, mass, width, height, color)
+  attr_accessor :rigidBody
+
+  def initialize(physics, mass, width, height, color)
     super()
-    @c = c
     @physics = physics
     @width = width
     @height = height
+    @color = color
 
     # position/rotation
     @transform = Bullet::BtTransform.new()
     @transform.setIdentity()
 
     # create a physics object.
-    @rigidBody = @physics.createBox(self, mass, width, height)
+    @colObj = Bullet::BtBoxShape.new(Bullet::BtVector3.new(width / 2, height / 2, width / 2))
+    inertia = Bullet::BtVector3.new()
+    @colObj.calculateLocalInertia(mass, inertia)
 
-    # create a drawing object.
-    shape = [-width / 2, -height / 2, 
-              width / 2, -height / 2, 
-              width / 2,  height / 2,
-             -width / 2,  height / 2]
-    @obj = TkcPolygon.new(c, shape) { 
-      fill color 
-      outline 'black'
-      disabledoutline ''
-      width 1
-      state 'normal'
-    }
-
+    @rigidBody = Bullet::BtRigidBody.new(mass, self, @colObj, inertia)
+    @rigidBody.setAngularFactor(Bullet::BtVector3.new(0, 0, 1)) # rotate around z-axis only becase of 2D.
   end
 
   def setWorldTransform(worldTrans)
     @transform = Bullet::BtTransform.new(worldTrans)
-    draw()
   end
 
   def getWorldTransform(worldTrans)
@@ -91,11 +86,9 @@ class Box < Bullet::BtMotionState
   def setPosition(x, y)
     @transform.setOrigin(Bullet::BtVector3.new(x, y, 0.0))
     @rigidBody.setCenterOfMassTransform(@transform)
-
-    draw()
   end    
 
-  def draw()
+  def draw(context)
     newPos = @transform.getOrigin()
     newRot = @transform.getRotation()
 
@@ -106,39 +99,72 @@ class Box < Bullet::BtMotionState
     lb = Bullet::quatRotate(newRot, lb)
     rb = -lt
     rt = -lb
-
-    shape = [newPos.x + lt.x, newPos.y + lt.y, 
-             newPos.x + rt.x, newPos.y + rt.y,
-             newPos.x + rb.x, newPos.y + rb.y,
-             newPos.x + lb.x, newPos.y + lb.y]
-    @obj.coords(shape)
+    
+    context.move_to(newPos.x + lt.x, newPos.y + lt.y)
+    context.line_to(newPos.x + rt.x, newPos.y + rt.y)
+    context.line_to(newPos.x + rb.x, newPos.y + rb.y)
+    context.line_to(newPos.x + lb.x, newPos.y + lb.y)
+    context.line_to(newPos.x + lt.x, newPos.y + lt.y)
+    context.set_source_color(@color)
+    context.fill(true)
+    context.set_source_color("black")
+    context.stroke
   end
 end
 
 
+## create a physics world.
 physics = Physics.new()
 
-c = TkCanvas.new
-c.width(300)
-c.height(300)
-
 # falling boxes.
-box = []
 id = 0
 11.times {|x|
   5.times {|y|
-    box[id] = Box.new(c, physics, 1.0, 10, 10, 'SkyBlue')
-    box[id].setPosition(100 + 10 * x, 50 - 10 * y)
-    id += 1
+    box = Box.new(physics, 1.0, 10, 10, 'sky blue')
+    box.setPosition(100 + 10 * x, 50 - 10 * y)
+    physics.addObject(box)
   }
 }
 
 # floor
-floor = Box.new(c, physics, 0, 120, 6, 'gray')
+floor = Box.new(physics, 0, 100, 5, 'gray')
 floor.setPosition(150, 200)
+physics.addObject(floor)
 
-c.pack
 
-TkAfter.new(1000 / 60, -1, proc{ physics.update()}).start
+## create a drawing window.
+window = Gtk::Window.new
+window.set_default_size(300, 300)
+window.signal_connect("destroy") do
+  Gtk.main_quit
+  false
+end
 
-Tk.mainloop
+drawing_area = Gtk::DrawingArea.new
+
+delta = 0
+drawing_area.signal_connect("expose-event") do |widget, event|
+  context = widget.window.create_cairo_context  
+  delta += physics.update(context)
+
+  # create a new box per 3sec.
+  if (delta > 3.0) 
+    box = Box.new(physics, 1.0, 10, 10, 'orange')
+    box.setPosition(125 + (physics.objects.length % 10) * 5, 0)
+    physics.addObject(box)
+    delta = 0
+  end
+  true
+end
+
+Gtk.timeout_add(1000.0 / 60.0) {
+  drawing_area.queue_draw
+  true
+}
+
+window.add(drawing_area)
+window.show_all
+
+Gtk.main
+
+
