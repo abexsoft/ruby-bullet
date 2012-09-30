@@ -53,15 +53,15 @@ EFIX:STRING=..\\..\\lib\\pkgconfig\\'
 
     DLEXT = RbConfig::MAKEFILE_CONFIG['DLEXT']
 
-    task :bullet => ["lib/Bullet.#{DLEXT}"] 
+    task :bullet => ["lib/bullet.#{DLEXT}"] 
 
     ## lib/*.#{DLEXT}
-    file "lib/Bullet.#{DLEXT}" => "bindings/bullet/Bullet.#{DLEXT}" do |f|
+    file "lib/bullet.#{DLEXT}" => "bindings/bullet/bullet.#{DLEXT}" do |f|
       cp f.prerequisites, "lib/", :preserve => true
     end
 
     ## ext/**/*.#{DLEXT}
-    file "bindings/bullet/Bullet.#{DLEXT}" => FileList["bindings/bullet/Makefile"] do |f|
+    file "bindings/bullet/bullet.#{DLEXT}" => FileList["bindings/bullet/Makefile"] do |f|
       sh 'cd bindings/bullet/ && make clean && make'
     end
     CLEAN.include 'bindings/bullet/*.{o,so,dll}'
@@ -74,7 +74,7 @@ EFIX:STRING=..\\..\\lib\\pkgconfig\\'
 
     ## make wrappers with swig.
     file 'bindings/bullet/interface/bullet_wrap.cpp' do
-      chdir('bindings/bullet/interface') { sh 'make' }
+      chdir('bindings/bullet/interface') { sh 'rake' }
     end
     CLEAN.include 'bindings/bullet/interface/bullet_wrap.{cpp,h,o}'
   end
@@ -97,7 +97,7 @@ end
 #
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'Version'
+require 'version'
 
 spec = Gem::Specification.new do |s|
 
@@ -123,6 +123,8 @@ spec = Gem::Specification.new do |s|
                      'deps/lib/*',
                      'deps/include/**/*',
                     ].to_a
+
+#  s.extra_rdoc_files = ['bindings/bullet/interface/bullet_wrap.cpp']
 
   s.require_paths = ["lib"]
 end

@@ -20,4 +20,4 @@ $srcs = ["interface/bullet_wrap.cpp"]
 $objs = $srcs.collect {|o| o.sub(/\.cpp|\.cc|\.cxx/, ".o")}
 $cleanfiles = $objs
 
-create_makefile('Bullet')
+create_makefile('bullet')

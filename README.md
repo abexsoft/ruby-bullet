@@ -24,7 +24,7 @@ Run a sample application.
 The sample application uses gtk2 to draw boxes.
 
      $ sudo gem install gtk2    
-     $ ruby <gems_path>/ruby-bullet-<version>-<arch>/sample/hello_bullet/HelloBullet.rb
+     $ ruby <gems_path>/ruby-bullet-<version>-<arch>/sample/hello_bullet/hello_bullet.rb
 
 
 How to compile
