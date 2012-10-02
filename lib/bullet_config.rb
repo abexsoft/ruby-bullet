@@ -1,28 +1,28 @@
 class BulletConfig
-  def self.getTopDir
+  def self.get_top_dir
     File.dirname(File.dirname(File.expand_path(__FILE__)))
   end
 
-  def self.getDepsLibPath
-    "#{getTopDir()}/deps/lib"
+  def self.get_deps_lib_path
+    "#{get_top_dir()}/deps/lib"
   end
 
-  def self.getDepsIncPath
-    "#{getTopDir()}/deps/include/bullet/"
+  def self.get_deps_inc_path
+    "#{get_top_dir()}/deps/include/bullet/"
   end
 
-  def self.getIncFlags
-    " -I#{getTopDir()}/deps/include/bullet/ " +     
-    " -I#{getTopDir()}/deps/include/bullet/LinearMath/ " + 
-    " -I#{getTopDir()}/deps/include/bullet/BulletCollision/CollisionDispatch/ " + 
-    " -I#{getTopDir()}/deps/include/bullet/BulletCollision/BroadphaseCollision/ " + 
-    " -I#{getTopDir()}/deps/include/bullet/BulletCollision/NarrowPhaseCollision/ " +
-    " -I#{getTopDir()}/deps/include/bullet/BulletCollision/CollisionShapes/ " + 
-    " -I#{getTopDir()}/deps/include/bullet/BulletCollision/Gimpact/ " + 
-    " -I#{getTopDir()}/deps/include/bullet/BulletDynamics/ConstraintSolver/ " + 
-    " -I#{getTopDir()}/deps/include/bullet/BulletDynamics/Dynamics/ " +
-    " -I#{getTopDir()}/deps/include/bullet/BulletDynamics/Vehicle/ " + 
-    " -I#{getTopDir()}/deps/include/bullet/BulletDynamics/Character/ " + 
-    " -I#{getTopDir()}/deps/include/bullet/BulletSoftBody/ "
+  def self.get_inc_flags
+    " -I#{get_top_dir()}/deps/include/bullet/ " +     
+    " -I#{get_top_dir()}/deps/include/bullet/LinearMath/ " + 
+    " -I#{get_top_dir()}/deps/include/bullet/BulletCollision/CollisionDispatch/ " + 
+    " -I#{get_top_dir()}/deps/include/bullet/BulletCollision/BroadphaseCollision/ " + 
+    " -I#{get_top_dir()}/deps/include/bullet/BulletCollision/NarrowPhaseCollision/ " +
+    " -I#{get_top_dir()}/deps/include/bullet/BulletCollision/CollisionShapes/ " + 
+    " -I#{get_top_dir()}/deps/include/bullet/BulletCollision/Gimpact/ " + 
+    " -I#{get_top_dir()}/deps/include/bullet/BulletDynamics/ConstraintSolver/ " + 
+    " -I#{get_top_dir()}/deps/include/bullet/BulletDynamics/Dynamics/ " +
+    " -I#{get_top_dir()}/deps/include/bullet/BulletDynamics/Vehicle/ " + 
+    " -I#{get_top_dir()}/deps/include/bullet/BulletDynamics/Character/ " + 
+    " -I#{get_top_dir()}/deps/include/bullet/BulletSoftBody/ "
   end
 end
