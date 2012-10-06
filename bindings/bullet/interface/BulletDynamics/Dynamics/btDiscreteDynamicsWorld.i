@@ -2,9 +2,9 @@
 #include <btDiscreteDynamicsWorld.h>
 %}
 
-#ifdef DEBUG_FREEFUNC
+//#ifdef DEBUG_FREEFUNC
 %freefunc btDiscreteDynamicsWorld "debug_free_btDiscreteDynamicsWorld";
-#endif
+//#endif
 
 %include btDiscreteDynamicsWorld.h
 

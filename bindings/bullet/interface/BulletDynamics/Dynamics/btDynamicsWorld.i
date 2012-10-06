@@ -7,9 +7,9 @@
 
 %feature("director") TickListener;
 
-#ifdef DEBUG_FREEFUNC
+//#ifdef DEBUG_FREEFUNC
 %freefunc btDynamicsWorld "debug_free_BtDynamicsWorld";
-#endif
+//#endif
 
 %include btDynamicsWorld.h
 %include "../../../src/TickListener.h"
@@ -17,9 +17,15 @@
 %extend btDynamicsWorld {
 	void setInternalTickCallback(TickListener* listener, bool isPreTick=false) {
 		if (isPreTick)
-			self->setInternalTickCallback((btInternalTickCallback)TickListener::bulletPreTickCallback, listener, isPreTick);
+			self->setInternalTickCallback(
+				(btInternalTickCallback)TickListener::bulletPreTickCallback, 
+				listener, 
+				isPreTick);
 		else
-			self->setInternalTickCallback((btInternalTickCallback)TickListener::bulletTickCallback, listener, isPreTick);
+			self->setInternalTickCallback(
+				(btInternalTickCallback)TickListener::bulletTickCallback, 
+				listener, 
+				isPreTick);
 	}
 }
 

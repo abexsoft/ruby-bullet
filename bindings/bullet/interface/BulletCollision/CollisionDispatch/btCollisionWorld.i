@@ -72,6 +72,8 @@ struct ContactResultCallback : public btCollisionWorld::ContactResultCallback
 #include <btCollisionWorld.h>
 %}
 
+%freefunc btCollisionWorld "debug_free_BtCollisionWorld";
+
 %include btCollisionWorld.h
 
 %{
@@ -79,4 +81,15 @@ typedef btCollisionWorld::LocalRayResult LocalRayResult;
 typedef btCollisionWorld::RayResultCallback RayResultCallback;
 typedef btCollisionWorld::ClosestRayResultCallback ClosestRayResultCallback;
 typedef btCollisionWorld::ContactResultCallback ContactResultCallback;
+
+
+ static void debug_free_BtCollisionWorld(void* ptr) {
+         btCollisionWorld* obj = (btCollisionWorld*) ptr;
+         
+         std::cout << __PRETTY_FUNCTION__ << std::endl;
+         
+         delete obj;
+ }
+
+
 %}

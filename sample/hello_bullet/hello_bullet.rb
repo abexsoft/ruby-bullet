@@ -2,7 +2,7 @@ $LOAD_PATH.push(File.dirname(File.expand_path(__FILE__)) + "/../../lib")
 
 require 'gtk2'
 require 'cairo'
-require "bullet.so"
+require "bullet"
 
 class Physics
   attr_accessor :context
@@ -50,6 +50,14 @@ class Physics
     }
 
     return delta
+  end
+
+  def finalize()
+    # patch for GC.
+    @objects.each{|body|
+      @dynamicsWorld.remove_rigid_body(body.rigidBody)
+    }
+    @objects = []
   end
 end
 
@@ -137,6 +145,7 @@ physics.add_object(floor)
 window = Gtk::Window.new
 window.set_default_size(300, 300)
 window.signal_connect("destroy") do
+  physics.finalize
   Gtk.main_quit
   false
 end
