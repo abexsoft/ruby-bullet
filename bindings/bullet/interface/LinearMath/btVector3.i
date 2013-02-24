@@ -2,7 +2,6 @@
 #include <btVector3.h>
 %}
 
-
 %rename("x") btVector3::getX();
 %rename("x=") btVector3::setX(btScalar value);
 %rename("y") btVector3::getY();

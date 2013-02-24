@@ -1,18 +1,13 @@
 require 'mkmf'
-
-DEPS_DIR = "../../deps"
-
-# set values of INC and LIB.
-load "#{DEPS_DIR}/env.rb"
-
+require_relative "../../lib/ruby-bullet"
 
 # set flags
-$CFLAGS += " -g " + BULLET_INC + " -I./src"
+$CFLAGS += " -g #{Ruby::Bullet::get_inc_flags} -I./src"
 
 if (/mingw/ =~ RUBY_PLATFORM)
-  $LDFLAGS += " -static-libgcc -static-libstdc++ " + BULLET_LIB + " -lws2_32 -lwinmm"
+  $LDFLAGS += " -static-libgcc -static-libstdc++ #{Ruby::Bullet::get_lib_flags} -lws2_32 -lwinmm"
 else
-  $LDFLAGS += " -static-libgcc -static-libstdc++ " + BULLET_LIB
+  $LDFLAGS += " -static-libgcc -static-libstdc++ #{Ruby::Bullet::get_lib_flags}"
 end
 
 $srcs = ["interface/bullet_wrap.cpp"]

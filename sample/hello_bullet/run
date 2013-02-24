@@ -1,0 +1,6 @@
+#!/bin/sh
+
+FILE_PATH=`dirname "$0"`
+DEPS_PATH=$FILE_PATH/../../deps
+
+LD_LIBRARY_PATH=${DEPS_PATH}/lib:$LD_LIBRARY_PATH ruby $FILE_PATH/hello_bullet.rb
