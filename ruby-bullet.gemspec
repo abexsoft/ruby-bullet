@@ -12,7 +12,8 @@ Gem::Specification.new do |gem|
   gem.homepage      = "https://github.com/abexsoft/ruby-bullet"
   gem.platform      = Gem::Platform::CURRENT
 
-  gem.files         = Dir['Rakefile',
+  gem.files         = Dir['Gemfile',
+                          'Rakefile',
                           'README.md',
                           'INSTALL.md',
                           'LICENSE',
