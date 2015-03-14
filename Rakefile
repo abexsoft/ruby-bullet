@@ -1,11 +1,23 @@
 require 'rubygems/package_task'
 require 'rake/clean'
 
+BULLET_FILE = "bullet-2.82-r2704.tgz"
+BULLET_DIR = "bullet-2.82-r2704"
+
+
+desc 'All clean'
+task :cleanall do
+  sh "rm -rf deps/include"
+  sh "rm -rf deps/lib"
+  sh "rm -rf deps/src/#{BULLET_DIR}"
+  sh "rm -f  deps/src/#{BULLET_FILE}"
+end
+
 desc 'Download the source packages.'
 task :download do
   FileUtils::mkdir_p("deps/src")
   chdir('deps/src') {
-    BULLET_FILE = "bullet-2.80-rev2531.tgz"
+    BULLET_FILE = "bullet-2.82-r2704.tgz"
     sh "wget http://bullet.googlecode.com/files/#{BULLET_FILE}"
     sh "tar xzvf #{BULLET_FILE}"
   }
@@ -13,7 +25,7 @@ end
 
 desc 'Compile bullet libraries.'
 task :compile do
-  chdir("deps/src/bullet-2.80-rev2531/") {
+  chdir("deps/src/#{BULLET_DIR}") {
     if /mingw/ =~ RUBY_PLATFORM
       sh 'cmake . -G "MSYS Makefiles" -DUSE_GLUT:BOOL=OFF -DBUILD_DEMOS:BOOL=OFF -DCMAKE_INSTALL_PREFIX:PATH=..\
 \.. -DINCLUDE_INSTALL_DIR:PATH=include\\bullet -DLIB_DESTINATION:STRING=..\\..\\lib -DPKGCONFIG_INSTALL_PR

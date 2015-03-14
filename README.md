@@ -28,6 +28,9 @@ If you want to compile from source, try the following.
     $ gem build ruby-bullet.gemspec
     $ gem install ruby-bullet-<version>-<arch>.gem 
 
+You need to install cmake and swig.
+
+
 ## Usages
 
 Run a sample application.  
