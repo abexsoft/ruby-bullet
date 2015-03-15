@@ -15,7 +15,6 @@ Gem::Specification.new do |gem|
   gem.files         = Dir['Gemfile',
                           'Rakefile',
                           'README.md',
-                          'INSTALL.md',
                           'LICENSE',
                           'ruby-bullet.gemspec',
                           'bindings/bullet/interface/**/*',
@@ -23,8 +22,6 @@ Gem::Specification.new do |gem|
                           'doc/**/*',
                           'lib/**/*',
                           'sample/**/*',
-                          'deps/lib/*',
-                          'deps/include/**/*',
                          ]
 
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
