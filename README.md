@@ -2,6 +2,12 @@
 
 Ruby-bullet is a ruby binding for Bullet.
 
+## Preparation
+
+Install bullet-2.28 libraries and include files.
+
+Debian has libbullet-dev package in backports.
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -15,21 +21,6 @@ And then execute:
 Or install it yourself as:
 
     $ gem install ruby-bullet
-
-## How to install from source.
-
-If you want to compile from source, try the following.
-
-    $ git clone git://github.com/abexsoft/ruby-bullet.git 
-    $ cd ruby-bullet
-    $ rake download 
-    $ rake compile  
-    $ rake build 
-    $ gem build ruby-bullet.gemspec
-    $ gem install ruby-bullet-<version>-<arch>.gem 
-
-You need to install cmake and swig.
-
 
 ## Usages
 

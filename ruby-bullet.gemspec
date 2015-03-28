@@ -10,21 +10,27 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{A ruby binding for Bullet.}
   gem.description   = %q{A ruby binding for Bullet.}
   gem.homepage      = "https://github.com/abexsoft/ruby-bullet"
-  gem.platform      = Gem::Platform::CURRENT
 
   gem.files         = Dir['Gemfile',
                           'Rakefile',
                           'README.md',
                           'LICENSE',
                           'ruby-bullet.gemspec',
+                          'bindings/bullet/extconf.rb',
                           'bindings/bullet/interface/**/*',
-                          'bindings/bullet/src/**/*',
+                          'bindings/bullet/src/*',
                           'doc/**/*',
-                          'lib/**/*',
+                          'lib/ruby-bullet.rb',
+                          'lib/ruby-bullet/version.rb',
                           'sample/**/*',
                          ]
+
+  gem.extensions << 'Rakefile'
 
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
+
+  gem.requirements << 'libbullet, v2.82'
+
 end

@@ -48,6 +48,8 @@ end
 
 DLEXT = RbConfig::MAKEFILE_CONFIG['DLEXT']
 
+task :default => :build
+
 desc 'Compile a bullet extension library.'
 task :build => ["lib/bullet.#{DLEXT}"] 
 

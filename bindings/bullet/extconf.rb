@@ -2,13 +2,18 @@ require 'mkmf'
 require_relative "../../lib/ruby-bullet"
 
 # set flags
-$CXXFLAGS += " -g #{Ruby::Bullet::get_inc_flags} -I./src"
+$CXXFLAGS += " -g #{Ruby::Bullet::Dynamic::get_inc_flags} -I./src"
 
+=begin
 if (/mingw/ =~ RUBY_PLATFORM)
-  $LDFLAGS += " -static-libgcc -static-libstdc++ #{Ruby::Bullet::get_lib_flags} -lws2_32 -lwinmm"
+  $LDFLAGS += " -static-libgcc -static-libstdc++ #{Ruby::Bullet::Static::get_lib_flags} -lws2_32 -lwinmm"
 else
-  $LDFLAGS += " -static-libgcc -static-libstdc++ #{Ruby::Bullet::get_lib_flags}"
+  $LDFLAGS += " -static-libgcc -static-libstdc++ #{Ruby::Bullet::Static::get_lib_flags}"
 end
+=end
+
+$LDFLAGS += " #{Ruby::Bullet::Dynamic::get_lib_flags}"
+
 
 $srcs = ["interface/bullet_wrap.cpp"]
 

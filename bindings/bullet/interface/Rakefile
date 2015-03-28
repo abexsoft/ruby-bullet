@@ -1,7 +1,7 @@
 require_relative "../../../lib/ruby-bullet"
 
 SWIG = 'swig'
-SWIGFLAGS = "-ruby -c++ -w801 #{Ruby::Bullet::get_inc_flags} -I../src/ -autorename"
+SWIGFLAGS = "-ruby -c++ -w801 #{Ruby::Bullet::Dynamic::get_inc_flags} -I../src/ -autorename"
 
 TARGET = 'bullet_wrap.cpp'
 
