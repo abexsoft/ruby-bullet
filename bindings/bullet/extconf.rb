@@ -2,7 +2,12 @@ require 'mkmf'
 require_relative "../../lib/ruby-bullet"
 
 # set flags
-$CXXFLAGS += " -g #{Ruby::Bullet::Dynamic::get_inc_flags} -I./src"
+
+if $CXXFLAGS
+  $CXXFLAGS += " -g #{Ruby::Bullet::Dynamic::get_inc_flags} -I./src" 
+else
+  $CFLAGS += " -g #{Ruby::Bullet::Dynamic::get_inc_flags} -I./src"
+end
 
 =begin
 if (/mingw/ =~ RUBY_PLATFORM)
